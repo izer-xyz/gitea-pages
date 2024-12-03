@@ -1,0 +1,122 @@
+(try) { 
+        reverse_proxy @parts {args[0]} {
+
+                # Remove all headers to upstream - particularly the original host
+                header_up -*
+                # Remove all return headers from upstream - particulraly content-type
+                header_down -*
+
+                header_up Host {upstream_hostport}
+
+                rewrite {args[1]}
+
+                # Return content if found
+                @ok status 200
+                handle_response @ok {
+                        copy_response
+                }
+
+                # Ignore not found
+                @error status 4xx
+                handle_response @error 
+
+                # Follow redirect
+                @redirect status 3xx
+                handle_response @redirect {
+                        rewrite {rp.header.Location}
+                        reverse_proxy {args[0]} {
+                                header_up -*
+                                header_down -*
+                        }
+                }
+        }
+}
+
+:80 {   
+        # Gitea host:port with public repositories with raw files
+        vars upstream "{$GITEA_HOST:git:3000}"
+        
+        # Gitea raw urls return everything as text/plain 
+        # Set content-type based on the extension
+        @extension path_regexp extension (.*)\.(\w+)
+        
+        # got the list from somewhere on the internet - should reference here if I can find it back
+        map @extension {re.extension.2} {content_type} {
+            ~^(?:appcache|manifest)$    text/cache-manifest;charset=utf-8
+            ~^atom$                     application/atom+xml;charset=utf-8
+            ~^bat$                      application/x-msdownload;
+            ~^coffee$                   text/coffeescript;charset=utf-8
+            ~^css$                      text/css;charset=utf-8
+            ~^csv$                      text/csv;charset=utf-8
+            ~^eot$                      application/vnd.ms-fontobject;
+            ~^geojson$                  application/vnd.geo+json;charset=utf-8
+            ~^(?:hbs|handlebars)$       text/x-handlebars-template;
+            ~^htc$                      text/x-component;
+            ~^html?$                    text/html;charset=utf-8
+            ~^ics$                      text/calendar;charset=utf-8
+            ~^jscad$                    application/javascript;charset=utf-8
+            ~^json$                     application/json;charset=utf-8
+            ~^jsonld$                   application/ld+json;charset=utf-8
+            ~^kml$                      application/vnd.google-earth.kml+xml;charset=utf-8
+            ~^(?:md|markdown)$          text/markdown;charset=utf-8
+            ~^m?js$                     application/javascript;charset=utf-8
+            ~^mhtml$                    multipart/related;charset=utf-8
+            ~^n3$                       text/n3;charset=utf-8
+            ~^nt$                       application/n-triples;
+            ~^otf$                      font/otf;
+            ~^(?:owl|rdf)$              application/rdf+xml;charset=utf-8
+            ~^pdf$                      application/pdf;
+            ~^rss$                      application/rss+xml;charset=utf-8
+            ~^shexc?$                   text/shex;
+            ~^svg$                      image/svg+xml;
+            ~^swf$                      application/x-shockwave-flash;
+            ~^stl$                      model/stl;
+            ~^tt(?:c|f)$                application/x-font-ttf;
+            ~^ttl$                      text/turtle;
+            ~^vcard$                    text/vcard;charset=utf-8
+            ~^vcf$                      text/x-vcard;charset=utf-8
+            ~^vtt$                      text/vtt;
+            ~^woff$                     application/font-woff;
+            ~^woff2$                    application/font-woff2;
+            ~^xht(?:ml)?$               application/xhtml+xml;charset=utf-8
+            ~^xml$                      text/xml;charset=utf-8
+            ~^txt$                      text/plain;charset=utf-8
+            ~^(?:xsl|xsd)$              application/xml;charset=utf-8
+            ~^xslt$                     application/xslt+xml;charset=utf-8
+            ~^ya?ml$                    text/yaml;charset=utf-8
+            ~^wasm$                     application/wasm;
+            ~^(?:d|s)?rpm$              application/x-redhat-package-manager;
+            default                     text/html;charset=utf-8
+        } 
+
+        header @extension Content-Type {content_type}
+
+        # get subdomain of the requested url
+        @parts header_regexp host Host ^(\w+p)\..*$
+
+        # Look for the first file that we can find
+
+        # Example  http://org.example.com/app/
+        # try http://gitea:3000/org/org.example.com/raw/branch/pages/app
+        import try {vars.upstream} /{re.host.1}/{host}/raw/branch/pages{path}
+
+        # try http://gitea:3000/org/org.example.com/raw/branch/pages/app/index.html
+        import try {vars.upstream} /{re.host.1}/{host}/raw/branch/pages{path}/index.html
+
+        # try http://gitea:3000/org/org.example.com/raw/branch/[defult branch: e.g. master or main]/app
+        import try {vars.upstream} /{re.host.1}/{host}/raw{path}
+
+        import try {vars.upstream} /{re.host.1}/{host}/raw{path}/index.html
+        #import try {vars.upstream} /{re.host.1}/{re.host.1}/raw/branch/pages{path}
+        #import try {vars.upstream} /{re.host.1}/{re.host.1}/raw/branch/pages{path}/index.html
+        #import try {vars.upstream} /{re.host.1}/{re.host.1}/raw{path}
+        #import try {vars.upstream} /{re.host.1}/{re.host.1}/raw{path}/index.html
+
+        # Default back to the full url - not using subdomain or host
+        # This is useful as it doesn't need subdomain or branch or
+        # any other defaults but it fixes the content type
+        reverse_proxy {vars.upstream} {
+                header_up -*
+                header_down -*
+        }       
+}       
