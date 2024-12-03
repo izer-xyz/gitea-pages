@@ -49,10 +49,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       -
+        name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      -
         name: Changelog Action
         id: changelog
         uses: TriPSs/conventional-changelog-action@v5
         with:
+          git-user-name: Github Action - Publish
           version-file: "package.yml"
           output-file: "false"
       -
