@@ -59,6 +59,7 @@ jobs:
         uses: TriPSs/conventional-changelog-action@v5
         with:
           git-user-name: Github Action - Publish
+          skip-on-empty: "false"
           version-file: "package.yml"
           output-file: "false"
       -
