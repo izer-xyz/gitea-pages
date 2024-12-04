@@ -48,7 +48,7 @@ services:
       traefik.http.routers.sub.entrypoints: 'https'
 ```
 
-# Page Resolution
+## Page Resolution
 
 Page resolution (details: [Caddyfile#L99](https://github.com/izer-xyz/gitea-pages/blob/ca3eb082ee25cf7bb2b9385112342221fb5ac3e0/Caddyfile#L99)) for a request like `https://sub.example.domain/app/` - the first HTTP 200 response will be returned:
 1. http:// git:3000 / **sub** / **sub.example.domain** /raw/branch/ **pages** / **app/**:
@@ -71,3 +71,7 @@ Page resolution (details: [Caddyfile#L99](https://github.com/izer-xyz/gitea-page
    * Repository: `sub.example.domain`
    * Branch: default branch `main` or `master`
    * File: `/app/index.html`
+
+## Customise 
+
+Download the [Caddyfile] and make any changes you want (e.g. different URL pattern, or don't want to use Traefik for TLS termination). If you remove the cache (first few lines) directive it should work with the offical caddy image / binaries.  
