@@ -1,3 +1,8 @@
+{
+        order cache before rewrite
+        cache ttl 24h
+}
+
 (try) { 
         reverse_proxy @parts {args[0]} {
 
@@ -33,6 +38,8 @@
 }
 
 :80 {   
+        log stdout 
+
         # Gitea host:port with public repositories with raw files
         vars upstream "{$GITEA_HOST:git:3000}"
         
