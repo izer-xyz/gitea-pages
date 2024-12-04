@@ -67,6 +67,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64, linux/arm64
+          push: true
           tags: |
             ghcr.io/izer-xyz/gitea-pages:${{ steps.changelog.outputs.tag }}
             ghcr.io/izer-xyz/gitea-pages:latest
