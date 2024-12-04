@@ -115,7 +115,8 @@
         # Default back to the full url - not using subdomain or host
         # This is useful as it doesn't need subdomain or branch or
         # any other defaults but it fixes the content type
-        reverse_proxy {vars.upstream} {
+        @raw path_regexp raw ^\/[^\/]+\/[^\/]+\/raw\/\.*
+        reverse_proxy @raw {vars.upstream} {
                 header_up -*
                 header_down -*
         }       
