@@ -71,9 +71,8 @@ jobs:
             ghcr.io/izer-xyz/gitea-pages:${{ steps.changelog.outputs.tag }}
             ghcr.io/izer-xyz/gitea-pages:latest
       - 
-        name: Create Release
-        uses: actions/create-release@v1
-        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        name: Release
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.changelog.outputs.tag }}
           release_name: ${{ steps.changelog.outputs.tag }}
