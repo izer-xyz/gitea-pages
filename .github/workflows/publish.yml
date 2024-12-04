@@ -56,7 +56,7 @@ jobs:
       -
         name: Changelog Action
         id: changelog
-        uses: TriPSs/conventional-changelog-action@v5
+        uses: TriPSs/conventional-changelog-action@v6
         with:
           git-user-name: Github Action - Publish
           skip-on-empty: "false"
