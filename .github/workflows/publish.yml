@@ -58,6 +58,7 @@ jobs:
         id: changelog
         uses: TriPSs/conventional-changelog-action@v6
         with:
+          preset: eslint
           git-user-name: Github Action - Publish
           skip-on-empty: "false"
           version-file: "package.yml"
@@ -77,6 +78,13 @@ jobs:
         with:
           tag_name: ${{ steps.changelog.outputs.tag }}
           release_name: ${{ steps.changelog.outputs.tag }}
-          body: ${{ steps.changelog.outputs.clean_changelog }}
+          body: |
+            ${{ steps.changelog.outputs.clean_changelog }}
+            
+            `docker pull ghcr.io/izer-xyz/gitea-pages:${{ steps.changelog.outputs.tag }}`
+
+            Or download from : 
+             * https://github.com/izer-xyz/gitea-pages/pkgs/container/gitea-pages
+            
 
 
