@@ -92,7 +92,7 @@
         header @extension Content-Type {content_type}
 
         # get subdomain of the requested url
-        @parts header_regexp host Host ^(\w+p)\..*$
+        @parts header_regexp host Host ^(\w+)\..*$
 
         # Look for the first file that we can find
 
