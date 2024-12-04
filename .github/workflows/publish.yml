@@ -79,10 +79,10 @@ jobs:
           tag_name: ${{ steps.changelog.outputs.tag }}
           release_name: ${{ steps.changelog.outputs.tag }}
           body: |
-            ${{ steps.changelog.outputs.clean_changelog }}
-            
             `docker pull ghcr.io/izer-xyz/gitea-pages:${{ steps.changelog.outputs.tag }}`
 
+            ${{ steps.changelog.outputs.clean_changelog }}
+            
             Or download from : 
              * https://github.com/izer-xyz/gitea-pages/pkgs/container/gitea-pages
             
