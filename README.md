@@ -74,4 +74,4 @@ Page resolution (details: [Caddyfile#L99](https://github.com/izer-xyz/gitea-page
 
 ## Customise 
 
-Download the [Caddyfile] and make any changes you want (e.g. different URL pattern, or don't want to use Traefik for TLS termination). If you remove the cache (first few lines) directive it should work with the offical caddy image / binaries.  
+Download the [Caddyfile](Caddyfile) and make any changes you want (e.g. different URL pattern, or don't want to use Traefik for TLS termination). If you remove the cache (first few lines) directive it should work with the offical caddy image / binaries.  
